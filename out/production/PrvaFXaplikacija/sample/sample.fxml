@@ -119,7 +119,7 @@
             </HBox>
          </left>
          <center>
-            <TableView fx:id="tabela" onMouseClicked="#prikaziNaKlik" prefHeight="271.0" BorderPane.alignment="CENTER">
+            <TableView fx:id="tabela" onMouseClicked="#prikaziNaKlikUTabeli" prefHeight="271.0" BorderPane.alignment="CENTER">
               <columns>
                 <TableColumn fx:id="tabelaID" prefWidth="46.0" text="ID" />
                 <TableColumn fx:id="tabelaIme" prefWidth="140.0" text="Ime" />

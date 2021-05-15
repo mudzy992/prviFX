@@ -19,8 +19,8 @@ public class Controller implements Initializable {
     korisnici korisnik = new korisnici();
     String url = "jdbc:ucanaccess://baza.accdb";
     ObservableList<tabelaModel> obList = FXCollections.observableArrayList();
-    Alert upozorenje = new Alert(AlertType.WARNING);
-    Alert informacija = new Alert(AlertType.INFORMATION);
+
+
     Alert potvrda = new Alert(AlertType.CONFIRMATION);
 
     @FXML
@@ -134,10 +134,12 @@ public class Controller implements Initializable {
                 korisnik.setRadnomjesto(radnomjestotxt.getText());
 
                 int dodaniKorisnik = insertStmt.executeUpdate();
-                informacija.setTitle("Informacija");
-                informacija.setHeaderText("Podaci za korisnika su uspješno izmjenjeni");
-                informacija.setContentText("Korisnik: " + imetxt.getText() + " " + prezimetxt.getText() + " je uspješno kreiran.");
-                informacija.showAndWait().ifPresent(rs -> {
+
+                Alert informacijaIzmjena = new Alert(AlertType.INFORMATION);
+                informacijaIzmjena.setTitle("Informacija");
+                informacijaIzmjena.setHeaderText("Podaci za korisnika su uspješno izmjenjeni");
+                informacijaIzmjena.setContentText("Korisnik: " + imetxt.getText() + " " + prezimetxt.getText() + " je uspješno izmjenjen.");
+                informacijaIzmjena.showAndWait().ifPresent(rs -> {
                     if (rs == ButtonType.OK) {
                         if (dodaniKorisnik > 0) {
                             tabela.getItems().removeAll(obList);
@@ -148,14 +150,16 @@ public class Controller implements Initializable {
                     }
                 });
             } catch (SQLException e) {
-                upozorenje.setTitle("SQL Greška");
-                upozorenje.setHeaderText("Kontaktirajte administratora");
-                upozorenje.setContentText("Opis greške: \n" + e.getMessage());
+                Alert upozorenjeIzmjenaSQL = new Alert(AlertType.WARNING);
+                upozorenjeIzmjenaSQL.setTitle("SQL Greška");
+                upozorenjeIzmjenaSQL.setHeaderText("Kontaktirajte administratora");
+                upozorenjeIzmjenaSQL.setContentText("Opis greške: \n" + e.getMessage());
             } catch (greske e){
-                upozorenje.setTitle("Greška pri unosu");
-                upozorenje.setHeaderText("Napravili ste grešku prilikom izmjene.");
-                upozorenje.setContentText("Opis greške: \n" + e.getMessage());
-                upozorenje.showAndWait();
+                Alert upozorenjeIzmjenaGreska = new Alert(AlertType.WARNING);
+                upozorenjeIzmjenaGreska.setTitle("Greška pri unosu");
+                upozorenjeIzmjenaGreska.setHeaderText("Napravili ste grešku prilikom izmjene.");
+                upozorenjeIzmjenaGreska.setContentText("Opis greške: \n" + e.getMessage());
+                upozorenjeIzmjenaGreska.showAndWait();
             }
     }
     @FXML
@@ -167,10 +171,11 @@ public class Controller implements Initializable {
             obrisi.setInt(1, Integer.parseInt(idtxt.getText()));
 
             int obrisaniKorinik = obrisi.executeUpdate();
-            informacija.setTitle("Informacija");
-            informacija.setHeaderText("Podaci za korisnika su uspješno izmjenjeni");
-            informacija.setContentText("Korisnik: " + imetxt.getText() + " " + prezimetxt.getText() + " je uspješno obrisan.");
-            informacija.showAndWait().ifPresent(rs -> {
+            Alert informacijaObrisi = new Alert(AlertType.INFORMATION);
+            informacijaObrisi.setTitle("Informacija");
+            informacijaObrisi.setHeaderText("Podaci za korisnika su uspješno izmjenjeni");
+            informacijaObrisi.setContentText("Korisnik: " + imetxt.getText() + " " + prezimetxt.getText() + " je uspješno obrisan.");
+            informacijaObrisi.showAndWait().ifPresent(rs -> {
                 if (rs == ButtonType.OK) {
                     if(obrisaniKorinik >0){
                         tabela.getItems().removeAll(obList);
@@ -183,9 +188,10 @@ public class Controller implements Initializable {
             });
 
         } catch (SQLException e){
-            upozorenje.setTitle("SQL Greška");
-            upozorenje.setHeaderText("Kontaktirajte administratora");
-            upozorenje.setContentText("Opis greške: \n" + e.getMessage());
+            Alert upozorenjeObrisiSQL = new Alert(AlertType.WARNING);
+            upozorenjeObrisiSQL.setTitle("SQL Greška");
+            upozorenjeObrisiSQL.setHeaderText("Kontaktirajte administratora");
+            upozorenjeObrisiSQL.setContentText("Opis greške: \n" + e.getMessage());
         }
     }
     @FXML
@@ -193,10 +199,13 @@ public class Controller implements Initializable {
         try(Connection konekcija = DriverManager.getConnection(url)) {
             String sqlInsert = "INSERT INTO Korisnici (Korisnici_ID, Ime, Prezime, Telefon, Sektor, Radno_mjesto) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement insertStmt = konekcija.prepareStatement(sqlInsert);
-
-            insertStmt.setInt(1, 0);
-            korisnik.setId(Integer.parseInt(idtxt.getText()));
-
+            if (idtxt.getText() == ""){
+                idtxt.setText(Integer.toString(0));
+                insertStmt.setInt(1, 0);
+            }else {
+                insertStmt.setInt(1, 0);
+                korisnik.setId(Integer.parseInt(idtxt.getText()));
+            }
             insertStmt.setString(2, imetxt.getText());
             korisnik.setIme(imetxt.getText());
 
@@ -217,11 +226,11 @@ public class Controller implements Initializable {
             korisnik.setRadnomjesto(radnomjestotxt.getText());
 
             int dodaniKorisnik = insertStmt.executeUpdate();
-
-            informacija.setTitle("Informacija");
-            informacija.setHeaderText("Podaci za korisnika su uspješno izmjenjeni");
-            informacija.setContentText("Korisnik: " + imetxt.getText() + " " + prezimetxt.getText() + " je uspješno kreiran.");
-            informacija.showAndWait().ifPresent(rs -> {
+            Alert informacijaDodaj = new Alert(AlertType.INFORMATION);
+            informacijaDodaj.setTitle("Informacija");
+            informacijaDodaj.setHeaderText("Podaci za korisnika su uspješno izmjenjeni");
+            informacijaDodaj.setContentText("Korisnik: " + imetxt.getText() + " " + prezimetxt.getText() + " je uspješno kreiran.");
+            informacijaDodaj.showAndWait().ifPresent(rs -> {
                 if (rs == ButtonType.OK) {
                     if(dodaniKorisnik > 0){
                         tabela.getItems().removeAll(obList);
@@ -234,14 +243,16 @@ public class Controller implements Initializable {
                 }
             });
         } catch (SQLException e) {
-            upozorenje.setTitle("SQL Greška");
-            upozorenje.setHeaderText("Kontaktirajte administratora");
-            upozorenje.setContentText("Opis greške: \n" + e.getMessage());
+            Alert upozorenjeDodajSQL = new Alert(AlertType.INFORMATION);
+            upozorenjeDodajSQL.setTitle("SQL Greška");
+            upozorenjeDodajSQL.setHeaderText("Kontaktirajte administratora");
+            upozorenjeDodajSQL.setContentText("Opis greške: \n" + e.getMessage());
         } catch (greske e){
-            upozorenje.setTitle("Greška pri unosu");
-            upozorenje.setHeaderText("Napravili ste grešku prilikom izmjene.");
-            upozorenje.setContentText("Opis greške: \n" + e.getMessage());
-            upozorenje.showAndWait();
+            Alert upozorenjeDodajGreska = new Alert(AlertType.INFORMATION);
+            upozorenjeDodajGreska.setTitle("Greška pri unosu");
+            upozorenjeDodajGreska.setHeaderText("Napravili ste grešku prilikom izmjene.");
+            upozorenjeDodajGreska.setContentText("Opis greške: \n" + e.getMessage());
+            upozorenjeDodajGreska.showAndWait();
         }
     }
 
@@ -288,8 +299,6 @@ public class Controller implements Initializable {
     }
 
     public void obrisiTextPolja(){
-        porukaLabel.setVisible(true);
-        porukaLabel.setText("Korisnik: " + imetxt.getText() + " " +prezimetxt.getText()+ " je uspješno izmjenjen.");
         idtxt.clear();
         imetxt.clear();
         prezimetxt.clear();
@@ -310,17 +319,10 @@ public class Controller implements Initializable {
         }
     }
 
-    public void praznoPolje(){
-        if (brojtelefonatxt.getText() == ""){
-            System.out.println("prazno polje telefona");
-        }
-    }
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ispunaTabele();
         zabranaIzmjeneID();
-        praznoPolje();
     }
 }
 
