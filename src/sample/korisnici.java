@@ -4,7 +4,7 @@ public class korisnici {
     private int id;
     private String ime;
     private String prezime;
-    private int telefon;
+    private String telefon;
     private String sektor;
     private String radnomjesto;
 
@@ -20,7 +20,7 @@ public class korisnici {
         return prezime;
     }
 
-    public int getTelefon() {
+    public String getTelefon() {
         return telefon;
     }
 
@@ -53,8 +53,8 @@ public class korisnici {
         this.prezime = prezime;
     }
 
-    public void setTelefon(int telefon) throws greske {
-        if (telefon <= 0){
+    public void setTelefon(String telefon) throws greske {
+        if (telefon == null){
             throw new greske("Telefon mora biti unešen");
         }
         this.telefon = telefon;

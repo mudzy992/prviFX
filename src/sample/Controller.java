@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.*;
 import java.net.URL;
@@ -15,8 +16,12 @@ import javafx.scene.control.TableColumn;
 
 
 public class Controller implements Initializable {
+    korisnici korisnik = new korisnici();
     String url = "jdbc:ucanaccess://baza.accdb";
     ObservableList<tabelaModel> obList = FXCollections.observableArrayList();
+    Alert upozorenje = new Alert(AlertType.WARNING);
+    Alert informacija = new Alert(AlertType.INFORMATION);
+    Alert potvrda = new Alert(AlertType.CONFIRMATION);
 
     @FXML
     private Button dodajbtn;
@@ -70,14 +75,13 @@ public class Controller implements Initializable {
     private Label porukaLabel;
 
     @FXML
-    void prikazi(MouseEvent event) {
+    public void prikazi(MouseEvent event) {
             try (Connection konekcija = DriverManager.getConnection(url)) {
                 String sql = "SELECT * from Korisnici";
                 ResultSet rezultatResultSet = konekcija.createStatement().executeQuery(sql);
                 //Prikaz u konzoli
                 System.out.println("Podaci iz tabele Korisnici");
                 System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", "ID", "IME", "PREZIME", "BROJ TELEFONA", "SEKTOR", "RADNO MJESTO");
-
                 while (rezultatResultSet.next()) {
                     idtxt.setText(Integer.toString(rezultatResultSet.getInt(1)));
                     imetxt.setText(rezultatResultSet.getString(2));
@@ -103,79 +107,147 @@ public class Controller implements Initializable {
     }
     @FXML
     void izmjeniStisni(MouseEvent event) {
-        try(Connection konekcija = DriverManager.getConnection(url)) {
-            String sqlInsert = "UPDATE Korisnici SET Ime = ?, Prezime = ?, Telefon = ?, Sektor = ?, Radno_mjesto =? WHERE Korisnici_ID = ?";
-            PreparedStatement insertStmt = konekcija.prepareStatement(sqlInsert);
-            insertStmt.setInt(6, Integer.parseInt(idtxt.getText()));
-            insertStmt.setString(1, imetxt.getText());
-            insertStmt.setString(2, prezimetxt.getText());
-            insertStmt.setInt(3, Integer.parseInt(brojtelefonatxt.getText()));
-            insertStmt.setString(4, sektortxt.getText());
-            insertStmt.setString(5, radnomjestotxt.getText());
-            int dodaniKorisnik = insertStmt.executeUpdate();
-            if(dodaniKorisnik > 0){
-                tabela.getItems().removeAll(obList);
-                ispunaTabele();
-                obrisiTextPolja();
-                zabranaIzmjeneID();
-                System.out.println("Korisnik: " + imetxt.getText() + " " +prezimetxt.getText()+ " je uspješno kreiran.");
+            try (Connection konekcija = DriverManager.getConnection(url)) {
+                String sqlInsert = "UPDATE Korisnici SET Ime = ?, Prezime = ?, Telefon = ?, Sektor = ?, Radno_mjesto =? WHERE Korisnici_ID = ?";
+                PreparedStatement insertStmt = konekcija.prepareStatement(sqlInsert);
+
+                insertStmt.setInt(6, Integer.parseInt(idtxt.getText()));
+                korisnik.setId(Integer.parseInt(idtxt.getText()));
+
+                insertStmt.setString(1, imetxt.getText());
+                korisnik.setIme(imetxt.getText());
+
+                insertStmt.setString(2, prezimetxt.getText());
+                korisnik.setPrezime(prezimetxt.getText());
+
+                if (brojtelefonatxt.getText() == ""){
+                    brojtelefonatxt.setText(Integer.toString(0));
+                    insertStmt.setInt(3, 0);
+                } else {
+                    insertStmt.setInt(3, Integer.parseInt(brojtelefonatxt.getText()));
+                    korisnik.setTelefon(brojtelefonatxt.getText());
+                }
+                insertStmt.setString(4, sektortxt.getText());
+                korisnik.setSektor(sektortxt.getText());
+
+                insertStmt.setString(5, radnomjestotxt.getText());
+                korisnik.setRadnomjesto(radnomjestotxt.getText());
+
+                int dodaniKorisnik = insertStmt.executeUpdate();
+                informacija.setTitle("Informacija");
+                informacija.setHeaderText("Podaci za korisnika su uspješno izmjenjeni");
+                informacija.setContentText("Korisnik: " + imetxt.getText() + " " + prezimetxt.getText() + " je uspješno kreiran.");
+                informacija.showAndWait().ifPresent(rs -> {
+                    if (rs == ButtonType.OK) {
+                        if (dodaniKorisnik > 0) {
+                            tabela.getItems().removeAll(obList);
+                            ispunaTabele();
+                            obrisiTextPolja();
+                            zabranaIzmjeneID();
+                        }
+                    }
+                });
+            } catch (SQLException e) {
+                upozorenje.setTitle("SQL Greška");
+                upozorenje.setHeaderText("Kontaktirajte administratora");
+                upozorenje.setContentText("Opis greške: \n" + e.getMessage());
+            } catch (greske e){
+                upozorenje.setTitle("Greška pri unosu");
+                upozorenje.setHeaderText("Napravili ste grešku prilikom izmjene.");
+                upozorenje.setContentText("Opis greške: \n" + e.getMessage());
+                upozorenje.showAndWait();
             }
-        } catch (SQLException e) {
-            porukaLabel.setVisible(true);
-            porukaLabel.setText("Greška sql: " + e.getMessage());
-            System.out.println("Greška sql: " + e.getMessage());
-        }
     }
     @FXML
     void obrisiStisni(MouseEvent event) {
         try(Connection koneckija = DriverManager.getConnection(url)) {
             String delete = "DELETE FROM Korisnici WHERE Korisnici_ID = ?";
             PreparedStatement obrisi = koneckija.prepareStatement(delete);
+
             obrisi.setInt(1, Integer.parseInt(idtxt.getText()));
+
             int obrisaniKorinik = obrisi.executeUpdate();
-            if(obrisaniKorinik >0){
-                tabela.getItems().removeAll(obList);
-                ispunaTabele();
-                obrisiTextPolja();
-                zabranaIzmjeneID();
-                System.out.println("Korisnik: " + imetxt.getText() + " " +prezimetxt.getText()+ " je uspješno obrisan.");
-            }
+            informacija.setTitle("Informacija");
+            informacija.setHeaderText("Podaci za korisnika su uspješno izmjenjeni");
+            informacija.setContentText("Korisnik: " + imetxt.getText() + " " + prezimetxt.getText() + " je uspješno obrisan.");
+            informacija.showAndWait().ifPresent(rs -> {
+                if (rs == ButtonType.OK) {
+                    if(obrisaniKorinik >0){
+                        tabela.getItems().removeAll(obList);
+                        ispunaTabele();
+                        obrisiTextPolja();
+                        zabranaIzmjeneID();
+                        System.out.println("Korisnik: " + imetxt.getText() + " " +prezimetxt.getText()+ " je uspješno obrisan.");
+                    }
+                }
+            });
+
         } catch (SQLException e){
-            porukaLabel.setVisible(true);
-            porukaLabel.setText("Greška sql: " + e.getMessage());
-            System.out.println("Greška sql: " + e.getMessage());
+            upozorenje.setTitle("SQL Greška");
+            upozorenje.setHeaderText("Kontaktirajte administratora");
+            upozorenje.setContentText("Opis greške: \n" + e.getMessage());
         }
     }
     @FXML
-    public void stisniDodaj(MouseEvent event) throws greske {
+    public void stisniDodaj(MouseEvent event){
         try(Connection konekcija = DriverManager.getConnection(url)) {
             String sqlInsert = "INSERT INTO Korisnici (Korisnici_ID, Ime, Prezime, Telefon, Sektor, Radno_mjesto) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement insertStmt = konekcija.prepareStatement(sqlInsert);
-            insertStmt.setInt(1, 0);
-            insertStmt.setString(2, imetxt.getText());
-            insertStmt.setString(3, prezimetxt.getText());
-            insertStmt.setInt(4, Integer.parseInt(brojtelefonatxt.getText()));
-            insertStmt.setString(5, sektortxt.getText());
-            insertStmt.setString(6, radnomjestotxt.getText());
-            int dodaniKorisnik = insertStmt.executeUpdate();
-            if(dodaniKorisnik > 0){
-                tabela.getItems().removeAll(obList);
-                ispunaTabele();
-                obrisiTextPolja();
-                zabranaIzmjeneID();
-                System.out.println("Korisnik: " + imetxt.getText() + " " +prezimetxt.getText()+ " je uspješno kreiran.");
-            }
-        } catch (SQLException e) {
-            porukaLabel.setVisible(true);
-            porukaLabel.setText("Greška sql: " + e.getMessage());
-            System.out.println("Greška sql: " + e.getMessage());
-        }
 
+            insertStmt.setInt(1, 0);
+            korisnik.setId(Integer.parseInt(idtxt.getText()));
+
+            insertStmt.setString(2, imetxt.getText());
+            korisnik.setIme(imetxt.getText());
+
+            insertStmt.setString(3, prezimetxt.getText());
+            korisnik.setPrezime(prezimetxt.getText());
+
+            if (brojtelefonatxt.getText() == ""){
+                brojtelefonatxt.setText(Integer.toString(0));
+                insertStmt.setInt(4, 0);
+            } else {
+                insertStmt.setInt(4, Integer.parseInt(brojtelefonatxt.getText()));
+                korisnik.setTelefon(brojtelefonatxt.getText());
+            }
+            insertStmt.setString(5, sektortxt.getText());
+            korisnik.setSektor(sektortxt.getText());
+
+            insertStmt.setString(6, radnomjestotxt.getText());
+            korisnik.setRadnomjesto(radnomjestotxt.getText());
+
+            int dodaniKorisnik = insertStmt.executeUpdate();
+
+            informacija.setTitle("Informacija");
+            informacija.setHeaderText("Podaci za korisnika su uspješno izmjenjeni");
+            informacija.setContentText("Korisnik: " + imetxt.getText() + " " + prezimetxt.getText() + " je uspješno kreiran.");
+            informacija.showAndWait().ifPresent(rs -> {
+                if (rs == ButtonType.OK) {
+                    if(dodaniKorisnik > 0){
+                        tabela.getItems().removeAll(obList);
+                        ispunaTabele();
+                        obrisiTextPolja();
+                        zabranaIzmjeneID();
+                        // konzolna potvrda
+                        System.out.println("Korisnik: " + imetxt.getText() + " " +prezimetxt.getText()+ " je uspješno kreiran.");
+                    }
+                }
+            });
+        } catch (SQLException e) {
+            upozorenje.setTitle("SQL Greška");
+            upozorenje.setHeaderText("Kontaktirajte administratora");
+            upozorenje.setContentText("Opis greške: \n" + e.getMessage());
+        } catch (greske e){
+            upozorenje.setTitle("Greška pri unosu");
+            upozorenje.setHeaderText("Napravili ste grešku prilikom izmjene.");
+            upozorenje.setContentText("Opis greške: \n" + e.getMessage());
+            upozorenje.showAndWait();
+        }
     }
 
     Integer index = -1;
     @FXML
-    void prikaziNaKlik(MouseEvent event) {
+    public void prikaziNaKlikUTabeli(MouseEvent event) {
         index = tabela.getSelectionModel().getSelectedIndex();
         if (index <= -1)
         {
@@ -238,10 +310,17 @@ public class Controller implements Initializable {
         }
     }
 
+    public void praznoPolje(){
+        if (brojtelefonatxt.getText() == ""){
+            System.out.println("prazno polje telefona");
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ispunaTabele();
         zabranaIzmjeneID();
+        praznoPolje();
     }
 }
 
