@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="1022.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+   <children>
+      <BorderPane prefHeight="400.0">
+         <left>
+            <HBox prefHeight="330.0" prefWidth="256.0" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="127.0" text="ID">
+                           <VBox.margin>
+                              <Insets left="10.0" top="9.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label prefHeight="17.0" prefWidth="127.0" text="Ime">
+                           <VBox.margin>
+                              <Insets left="10.0" top="13.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label prefHeight="17.0" prefWidth="127.0" text="Prezime">
+                           <VBox.margin>
+                              <Insets left="10.0" top="13.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label prefHeight="17.0" prefWidth="127.0" text="Broj telefona">
+                           <VBox.margin>
+                              <Insets left="10.0" top="13.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label prefHeight="17.0" prefWidth="127.0" text="Sektor">
+                           <VBox.margin>
+                              <Insets left="10.0" top="13.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label prefHeight="17.0" prefWidth="127.0" text="Radno mjesto">
+                           <VBox.margin>
+                              <Insets left="10.0" top="13.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label prefHeight="17.0" prefWidth="127.0" text="Label" visible="false">
+                           <VBox.margin>
+                              <Insets left="10.0" top="13.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label prefHeight="17.0" prefWidth="127.0" text="Label" visible="false">
+                           <VBox.margin>
+                              <Insets left="10.0" top="13.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label prefHeight="17.0" prefWidth="127.0" text="Label" visible="false">
+                           <VBox.margin>
+                              <Insets left="10.0" top="13.0" />
+                           </VBox.margin>
+                        </Label>
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="330.0" prefWidth="184.0">
+                     <children>
+                        <TextField fx:id="idtxt" editable="false">
+                           <VBox.margin>
+                              <Insets left="3.0" top="5.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <TextField fx:id="imetxt" promptText="Vaše ime">
+                           <VBox.margin>
+                              <Insets left="3.0" top="5.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <TextField fx:id="prezimetxt" promptText="Vaše prezime">
+                           <VBox.margin>
+                              <Insets left="3.0" top="5.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <TextField fx:id="brojtelefonatxt" promptText="Broj telefona">
+                           <VBox.margin>
+                              <Insets left="3.0" top="5.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <TextField fx:id="sektortxt" promptText="Sektor kojem pripadate">
+                           <VBox.margin>
+                              <Insets left="3.0" top="5.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <TextField fx:id="radnomjestotxt" promptText="Vaše radno mjesto">
+                           <VBox.margin>
+                              <Insets left="3.0" top="5.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <TextField visible="false">
+                           <VBox.margin>
+                              <Insets left="3.0" top="5.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <TextField visible="false">
+                           <VBox.margin>
+                              <Insets left="3.0" top="5.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <TextField visible="false">
+                           <VBox.margin>
+                              <Insets left="3.0" top="5.0" />
+                           </VBox.margin>
+                        </TextField>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+         </left>
+         <center>
+            <TableView fx:id="tabela" onMouseClicked="#prikaziNaKlik" prefHeight="271.0" BorderPane.alignment="CENTER">
+              <columns>
+                <TableColumn fx:id="tabelaID" prefWidth="46.0" text="ID" />
+                <TableColumn fx:id="tabelaIme" prefWidth="140.0" text="Ime" />
+                  <TableColumn fx:id="tabelaPrezime" prefWidth="140.0" text="Prezime" />
+                  <TableColumn fx:id="tabelaBrojTelefona" prefWidth="110.0" text="Broj telefona" />
+                  <TableColumn fx:id="tabelaSektor" prefWidth="150.0" text="Sektor" />
+                  <TableColumn fx:id="tabelaRadnoMjesto" prefWidth="150.0" text="Radno mjesto" />
+              </columns>
+               <BorderPane.margin>
+                  <Insets left="20.0" top="5.0" />
+               </BorderPane.margin>
+            </TableView>
+         </center>
+         <bottom>
+            <Pane prefHeight="124.0" prefWidth="851.0" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox prefHeight="116.0" prefWidth="281.0">
+                     <children>
+                        <HBox prefHeight="44.0" prefWidth="281.0">
+                           <children>
+                              <Button fx:id="dodajbtn" mnemonicParsing="false" onMouseClicked="#stisniDodaj" style="-fx-background-color: #008bf5; -fx-min-width: 65; -fx-min-height: 25;" text="Dodaj">
+                                 <HBox.margin>
+                                    <Insets left="25.0" top="5.0" />
+                                 </HBox.margin>
+                              </Button>
+                              <Button fx:id="obrisibtn" mnemonicParsing="false" onMouseClicked="#obrisiStisni" style="-fx-background-color: #008bf5; -fx-min-width: 65; -fx-min-height: 25;" text="Obriši">
+                                 <HBox.margin>
+                                    <Insets left="25.0" top="5.0" />
+                                 </HBox.margin>
+                              </Button>
+                              <Button fx:id="izmjenibtn" mnemonicParsing="false" onMouseClicked="#izmjeniStisni" style="-fx-background-color: #008bf5; -fx-min-width: 65; -fx-min-height: 25;" text="Izmjeni">
+                                 <HBox.margin>
+                                    <Insets left="25.0" top="5.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
+                        <Button fx:id="dodajbtn1" mnemonicParsing="false" onMouseClicked="#prikazi" style="-fx-background-color: #008bf5; -fx-min-width: 65; -fx-min-height: 25;" text="Prikazi">
+                           <VBox.margin>
+                              <Insets left="25.0" />
+                           </VBox.margin>
+                        </Button>
+                        <Label fx:id="porukaLabel" text="poruka" visible="false">
+                           <VBox.margin>
+                              <Insets left="10.0" top="10.0" />
+                           </VBox.margin>
+                        </Label>
+                     </children>
+                  </VBox>
+               </children>
+            </Pane>
+         </bottom>
+      </BorderPane>
+   </children>
+</Pane>
