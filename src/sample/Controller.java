@@ -170,19 +170,35 @@ public class Controller implements Initializable {
 
             obrisi.setInt(1, Integer.parseInt(idtxt.getText()));
 
-            int obrisaniKorinik = obrisi.executeUpdate();
-            Alert informacijaObrisi = new Alert(AlertType.INFORMATION);
+//            int obrisaniKorinik = obrisi.executeUpdate();
+            Alert informacijaObrisi = new Alert(AlertType.WARNING);
             informacijaObrisi.setTitle("Informacija");
-            informacijaObrisi.setHeaderText("Podaci za korisnika su uspješno izmjenjeni");
-            informacijaObrisi.setContentText("Korisnik: " + imetxt.getText() + " " + prezimetxt.getText() + " je uspješno obrisan.");
+            informacijaObrisi.setHeaderText("Da li želite nastaviti?");
+            informacijaObrisi.setContentText("Korisnik: " + imetxt.getText() + " " + prezimetxt.getText() + " će biti obrisan.");
+            informacijaObrisi.getButtonTypes().add(ButtonType.YES);
+            informacijaObrisi.getButtonTypes().add(ButtonType.NO);
+            informacijaObrisi.getButtonTypes().remove(ButtonType.OK);
             informacijaObrisi.showAndWait().ifPresent(rs -> {
-                if (rs == ButtonType.OK) {
+                if (rs == ButtonType.YES) {
+                    int obrisaniKorinik = 0;
+                    try {
+                        obrisaniKorinik = obrisi.executeUpdate();
+
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
                     if(obrisaniKorinik >0){
                         tabela.getItems().removeAll(obList);
                         ispunaTabele();
                         obrisiTextPolja();
                         zabranaIzmjeneID();
                         System.out.println("Korisnik: " + imetxt.getText() + " " +prezimetxt.getText()+ " je uspješno obrisan.");
+                    }
+                } if (rs == ButtonType.NO){
+                    try {
+                        koneckija.close();
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
                     }
                 }
             });
@@ -228,7 +244,7 @@ public class Controller implements Initializable {
             int dodaniKorisnik = insertStmt.executeUpdate();
             Alert informacijaDodaj = new Alert(AlertType.INFORMATION);
             informacijaDodaj.setTitle("Informacija");
-            informacijaDodaj.setHeaderText("Podaci za korisnika su uspješno izmjenjeni");
+            informacijaDodaj.setHeaderText("Korisnik uspješno dodan");
             informacijaDodaj.setContentText("Korisnik: " + imetxt.getText() + " " + prezimetxt.getText() + " je uspješno kreiran.");
             informacijaDodaj.showAndWait().ifPresent(rs -> {
                 if (rs == ButtonType.OK) {
