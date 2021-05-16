@@ -2,26 +2,31 @@ package sample;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.*;
+
+import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.util.ResourceBundle;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
+import javafx.stage.Stage;
 
 
 public class Controller implements Initializable {
+
     korisnici korisnik = new korisnici();
     String url = "jdbc:ucanaccess://baza.accdb";
     ObservableList<tabelaModel> obList = FXCollections.observableArrayList();
-
-
-    Alert potvrda = new Alert(AlertType.CONFIRMATION);
 
     @FXML
     private Button dodajbtn;
@@ -72,38 +77,8 @@ public class Controller implements Initializable {
     private TableColumn<tabelaModel, String> tabelaRadnoMjesto;
 
     @FXML
-    private Label porukaLabel;
-
-    @FXML
     public void prikazi(MouseEvent event) {
-            try (Connection konekcija = DriverManager.getConnection(url)) {
-                String sql = "SELECT * from Korisnici";
-                ResultSet rezultatResultSet = konekcija.createStatement().executeQuery(sql);
-                //Prikaz u konzoli
-                System.out.println("Podaci iz tabele Korisnici");
-                System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", "ID", "IME", "PREZIME", "BROJ TELEFONA", "SEKTOR", "RADNO MJESTO");
-                while (rezultatResultSet.next()) {
-                    idtxt.setText(Integer.toString(rezultatResultSet.getInt(1)));
-                    imetxt.setText(rezultatResultSet.getString(2));
-                    prezimetxt.setText(rezultatResultSet.getString(3));
-                    brojtelefonatxt.setText(rezultatResultSet.getString(4));
-                    sektortxt.setText(rezultatResultSet.getString(5));
-                    radnomjestotxt.setText(rezultatResultSet.getString(6));
-                    System.out.printf("%-20d%-20s%-20s%-20d%-20s%-20s\n",
-                            rezultatResultSet.getInt(1),
-                            rezultatResultSet.getString(2),
-                            rezultatResultSet.getString(3),
-                            rezultatResultSet.getInt(4),
-                            rezultatResultSet.getString(5),
-                            rezultatResultSet.getString(6));
-                    tabela.getItems().removeAll(obList);
-                    ispunaTabele();
-                    obrisiTextPolja();
-                    zabranaIzmjeneID();
-                }
-            }catch (SQLException e) {
-                e.printStackTrace();
-            }
+            prikaziBtn();
     }
     @FXML
     void izmjeniStisni(MouseEvent event) {
@@ -170,7 +145,6 @@ public class Controller implements Initializable {
 
             obrisi.setInt(1, Integer.parseInt(idtxt.getText()));
 
-//            int obrisaniKorinik = obrisi.executeUpdate();
             Alert informacijaObrisi = new Alert(AlertType.WARNING);
             informacijaObrisi.setTitle("Informacija");
             informacijaObrisi.setHeaderText("Da li želite nastaviti?");
@@ -183,17 +157,17 @@ public class Controller implements Initializable {
                     int obrisaniKorinik = 0;
                     try {
                         obrisaniKorinik = obrisi.executeUpdate();
-
+                        if(obrisaniKorinik > 0){
+                            tabela.getItems().removeAll(obList);
+                            ispunaTabele();
+                            zabranaIzmjeneID();
+                            System.out.println("Korisnik: " + imetxt.getText() + " " + prezimetxt.getText() + " je uspješno obrisan.");
+                            obrisiTextPolja();
+                        }
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
-                    if(obrisaniKorinik >0){
-                        tabela.getItems().removeAll(obList);
-                        ispunaTabele();
-                        obrisiTextPolja();
-                        zabranaIzmjeneID();
-                        System.out.println("Korisnik: " + imetxt.getText() + " " +prezimetxt.getText()+ " je uspješno obrisan.");
-                    }
+
                 } if (rs == ButtonType.NO){
                     try {
                         koneckija.close();
@@ -335,10 +309,26 @@ public class Controller implements Initializable {
         }
     }
 
+    public void prikaziBtn(){
+        tabela.getItems().removeAll(obList);
+        ispunaTabele();
+        obrisiTextPolja();
+        zabranaIzmjeneID();
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ispunaTabele();
         zabranaIzmjeneID();
+    }
+    private NoviRadnik NoviRadnik;
+    public void akcijaNew(ActionEvent actionEvent) throws IOException {
+        Stage stage = new Stage();
+        Parent root = FXMLLoader.load(getClass().getResource("noviRadnik.fxml"));
+        stage.setTitle("Novi radnik");
+        stage.setScene(new Scene(root));
+        stage.show();
+
     }
 }
 

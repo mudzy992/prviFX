@@ -5,11 +5,14 @@ public class tabelaModel {
 
     public tabelaModel(String IDTabela, String imeTabela, String prezimeTabela, String telefonTabela, String sektorTabela, String RMTabela) {
         this.IDTabela = IDTabela;
-        ImeTabela = imeTabela;
-        PrezimeTabela = prezimeTabela;
-        TelefonTabela = telefonTabela;
-        SektorTabela = sektorTabela;
+        this.ImeTabela = imeTabela;
+        this.PrezimeTabela = prezimeTabela;
+        this.TelefonTabela = telefonTabela;
+        this.SektorTabela = sektorTabela;
         this.RMTabela = RMTabela;
+    }
+
+    public tabelaModel() {
     }
 
     public String getIDTabela() {
